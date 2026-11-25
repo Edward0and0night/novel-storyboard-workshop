@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0d0b0e;
+  --panel: #17131a;
+  --foreground: #ece5d8;
+  --blood: #a31621;
+  --gold: #c9a227;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-panel: var(--panel);
+  --color-bone: var(--foreground);
+  --color-blood: var(--blood);
+  --color-gold: var(--gold);
+  --font-display: "Cinzel", "Noto Serif SC", "Songti SC", "SimSun", Georgia, serif;
+  --font-sans: system-ui, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+}
+
+html, body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
