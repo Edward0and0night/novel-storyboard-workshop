@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { MAX_CHARS, MIN_CHARS, type Shot } from "@/lib/types";
+import { SAMPLE_CHAPTER } from "@/lib/sample";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -12,6 +13,11 @@ export default function Home() {
   const count = text.trim().length;
   const tooShort = count < MIN_CHARS;
   const tooLong = count > MAX_CHARS;
+
+  function loadSample() {
+    setText(SAMPLE_CHAPTER);
+    setError("");
+  }
 
   async function generate() {
     if (tooShort) {
@@ -69,13 +75,21 @@ export default function Home() {
             {error}
           </p>
         )}
-        <div className="sticky bottom-0 -mx-4 mt-4 bg-panel/95 px-4 py-3 sm:static sm:mx-0 sm:p-0">
+        <div className="sticky bottom-0 -mx-4 mt-4 flex flex-col gap-2 bg-panel/95 px-4 py-3 sm:static sm:mx-0 sm:flex-row sm:p-0">
           <button
             onClick={generate}
             disabled={loading}
             className="w-full rounded bg-blood px-6 py-3 font-medium text-bone transition hover:brightness-110 disabled:opacity-60 sm:w-auto"
           >
             {loading ? "正在生成分镜…" : "生成分镜"}
+          </button>
+          <button
+            type="button"
+            onClick={loadSample}
+            disabled={loading}
+            className="w-full rounded border border-gold/60 px-6 py-3 text-gold transition hover:bg-gold/10 disabled:opacity-60 sm:w-auto"
+          >
+            试试示例章节
           </button>
         </div>
       </section>

@@ -10,10 +10,10 @@
     strict JSON, using the server-side API key from env
   - [x] 2.2 Add one retry on JSON parse failure; return a Chinese error
     message on final failure
-- [ ] 3. Frontend: input and generation
+- [x] 3. Frontend: input and generation
   - [x] 3.1 Paste box with character count, 500-char minimum hint, Generate
     button with loading state
-  - [ ] 3.2 "Try the sample" button loading the first ~1500 chars of the
+  - [x] 3.2 "Try the sample" button loading the first ~1500 chars of the
     sample chapter
 - [ ] 4. Frontend: shot cards and export
   - [ ] 4.1 Shot cards in a timeline: number, scene, camera, dialogue,
