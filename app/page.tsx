@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { MAX_CHARS, MIN_CHARS, type Shot } from "@/lib/types";
@@ -6,6 +6,7 @@ import { SAMPLE_CHAPTER } from "@/lib/sample";
 import { shotsToMarkdown } from "@/lib/markdown";
 import { saveHistory } from "@/lib/history";
 import ShotCard from "@/components/ShotCard";
+import { copyText } from "@/lib/clipboard";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -34,20 +35,24 @@ export default function Home() {
     const a = document.createElement("a");
     a.href = url;
     a.download = `分镜表-${new Date().toISOString().slice(0, 10)}.md`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    // 延迟释放，避免部分手机浏览器还没开始下载就失效
+    setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    flash("已开始下载 Markdown 文件");
   }
 
   async function copyMarkdown() {
-    try {
-      await navigator.clipboard.writeText(shotsToMarkdown(shots));
-      flash("已复制 Markdown 分镜表");
-    } catch {
-      flash("复制失败，请改用导出");
-    }
+    const ok = await copyText(shotsToMarkdown(shots));
+    flash(ok ? "已复制 Markdown 分镜表" : "复制失败，请改用“导出 Markdown”");
   }
 
   async function generate() {
+    if (count === 0) {
+      setError("请先粘贴一段小说章节，或点“试试示例章节”。");
+      return;
+    }
     if (tooShort) {
       setError(`再多写一点吧：章节至少需要 ${MIN_CHARS} 个字（目前 ${count} 个字）。`);
       return;
@@ -66,12 +71,20 @@ export default function Home() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || "生成失败，请稍后再试。");
-      const result = data.shots as Shot[];
+      const result = Array.isArray(data?.shots) ? (data.shots as Shot[]) : [];
+      if (result.length === 0) throw new Error("没有生成任何镜头，请换一段文字再试。");
       setShots(result);
       saveHistory(text, result);
     } catch (e) {
       // 出错时保留已粘贴的文字
-      setError(e instanceof Error && e.message ? e.message : "生成失败，请稍后再试。");
+      // fetch 自身抛出的 TypeError（断网、服务器没开）是英文信息，统一换成中文
+      const msg =
+        e instanceof TypeError
+          ? "连接服务器失败，请检查网络后重试。"
+          : e instanceof Error && e.message
+            ? e.message
+            : "生成失败，请稍后再试。";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -124,7 +137,21 @@ export default function Home() {
         </div>
       </section>
 
-      {shots.length > 0 && (
+      {loading && (
+        <div className="mt-8 rounded-md border border-blood/40 bg-panel p-6 text-center" aria-live="polite">
+          <p className="animate-pulse font-display text-lg text-bone">正在把章节拆成镜头…</p>
+          <p className="mt-2 text-sm text-bone/60">通常需要 20–45 秒，请不要关闭页面。</p>
+        </div>
+      )}
+
+      {!loading && shots.length === 0 && (
+        <div className="mt-8 rounded-md border border-dashed border-bone/20 p-6 text-center text-sm text-bone/60">
+          <p>这里还没有分镜。</p>
+          <p className="mt-1">粘贴 {MIN_CHARS} 字以上的章节后点“生成分镜”，会得到 8–12 个镜头。</p>
+        </div>
+      )}
+
+      {!loading && shots.length > 0 && (
         <>
           <div className="mt-8 flex flex-wrap items-center gap-2">
             <h2 className="mr-auto text-xl text-bone">

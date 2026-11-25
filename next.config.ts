@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // 允许手机通过局域网访问开发服务器（仅影响 next dev）
+  allowedDevOrigins: ["192.168.5.2"],
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

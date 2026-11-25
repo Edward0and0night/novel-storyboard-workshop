@@ -1,21 +1,18 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import type { Shot } from "@/lib/types";
+import { copyText } from "@/lib/clipboard";
 
 export default function ShotCard({ shot }: { shot: Shot }) {
   const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"" | "ok" | "fail">("");
 
   async function copyPrompt(e: React.MouseEvent) {
     e.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(shot.visualPrompt);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      setCopied(false);
-    }
+    const ok = await copyText(shot.visualPrompt);
+    setCopied(ok ? "ok" : "fail");
+    setTimeout(() => setCopied(""), 1500);
   }
 
   return (
@@ -45,17 +42,17 @@ export default function ShotCard({ shot }: { shot: Shot }) {
         {shot.narration && <p className="mt-2 break-words text-sm italic text-bone/60">{shot.narration}</p>}
         {open ? (
           <div className="mt-3 rounded bg-background p-3">
-            <p className="break-words font-mono text-xs leading-relaxed text-bone/80">{shot.visualPrompt}</p>
+            <p className="select-text break-words font-mono text-xs leading-relaxed text-bone/80">{shot.visualPrompt || "（该镜头没有画面提示词）"}</p>
             <button
               type="button"
               onClick={copyPrompt}
               className="mt-2 rounded border border-gold/60 px-3 py-1 text-xs text-gold hover:bg-gold/10"
             >
-              {copied ? "已复制" : "复制画面提示词"}
+              {copied === "ok" ? "已复制" : copied === "fail" ? "复制失败，请长按文字手动复制" : "复制画面提示词"}
             </button>
           </div>
         ) : (
-          <p className="mt-2 truncate text-xs text-bone/40">画面：{shot.visualPrompt}（点击展开）</p>
+          <p className="mt-2 truncate text-xs text-bone/40">画面：{shot.visualPrompt || "（无）"}（点击展开）</p>
         )}
       </div>
     </li>
