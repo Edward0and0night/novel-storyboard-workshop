@@ -15,10 +15,10 @@
     button with loading state
   - [x] 3.2 "Try the sample" button loading the first ~1500 chars of the
     sample chapter
-- [ ] 4. Frontend: shot cards and export
-  - [ ] 4.1 Shot cards in a timeline: number, scene, camera, dialogue,
+- [x] 4. Frontend: shot cards and export
+  - [x] 4.1 Shot cards in a timeline: number, scene, camera, dialogue,
     narration, mood, duration; click to expand full visual prompt + copy
-  - [ ] 4.2 Export Markdown download + Copy-to-clipboard; save last 5
+  - [x] 4.2 Export Markdown download + Copy-to-clipboard; save last 5
     generations to localStorage
 - [ ] 5. Polish and submit
   - [ ] 5.1 Mobile check (no horizontal scroll), empty/error states in Chinese

@@ -3,12 +3,16 @@
 import { useState } from "react";
 import { MAX_CHARS, MIN_CHARS, type Shot } from "@/lib/types";
 import { SAMPLE_CHAPTER } from "@/lib/sample";
+import { shotsToMarkdown } from "@/lib/markdown";
+import { saveHistory } from "@/lib/history";
+import ShotCard from "@/components/ShotCard";
 
 export default function Home() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [shots, setShots] = useState<Shot[]>([]);
+  const [notice, setNotice] = useState("");
 
   const count = text.trim().length;
   const tooShort = count < MIN_CHARS;
@@ -17,6 +21,30 @@ export default function Home() {
   function loadSample() {
     setText(SAMPLE_CHAPTER);
     setError("");
+  }
+
+  function flash(msg: string) {
+    setNotice(msg);
+    setTimeout(() => setNotice(""), 2000);
+  }
+
+  function exportMarkdown() {
+    const blob = new Blob([shotsToMarkdown(shots)], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `分镜表-${new Date().toISOString().slice(0, 10)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function copyMarkdown() {
+    try {
+      await navigator.clipboard.writeText(shotsToMarkdown(shots));
+      flash("已复制 Markdown 分镜表");
+    } catch {
+      flash("复制失败，请改用导出");
+    }
   }
 
   async function generate() {
@@ -38,7 +66,9 @@ export default function Home() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || "生成失败，请稍后再试。");
-      setShots(data.shots as Shot[]);
+      const result = data.shots as Shot[];
+      setShots(result);
+      saveHistory(text, result);
     } catch (e) {
       // 出错时保留已粘贴的文字
       setError(e instanceof Error && e.message ? e.message : "生成失败，请稍后再试。");
@@ -94,9 +124,36 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="shots" className="relative mt-8 border-l-2 border-blood pl-4">
-        {/* Task 4: 分镜卡片（当前已有 {shots.length} 个镜头数据） */}
-      </section>
+      {shots.length > 0 && (
+        <>
+          <div className="mt-8 flex flex-wrap items-center gap-2">
+            <h2 className="mr-auto text-xl text-bone">
+              分镜 · {shots.length} 个镜头 · 约 {shots.reduce((a, s) => a + s.seconds, 0)} 秒
+            </h2>
+            <button
+              type="button"
+              onClick={exportMarkdown}
+              className="rounded border border-blood/70 px-3 py-1.5 text-sm text-bone hover:bg-blood/20"
+            >
+              导出 Markdown
+            </button>
+            <button
+              type="button"
+              onClick={copyMarkdown}
+              className="rounded border border-bone/30 px-3 py-1.5 text-sm text-bone hover:bg-bone/10"
+            >
+              复制
+            </button>
+          </div>
+          {notice && <p className="mt-2 text-sm text-gold">{notice}</p>}
+          <ol id="shots" className="relative mt-4 ml-2 space-y-4 border-l-2 border-blood pl-4">
+            {shots.map((s) => (
+              <ShotCard key={s.n} shot={s} />
+            ))}
+          </ol>
+        </>
+      )}
     </main>
   );
 }
+
