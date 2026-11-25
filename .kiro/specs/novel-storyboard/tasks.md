@@ -5,13 +5,13 @@
     Oct 30, 2026); commit `.kiro/` at the repo root, never gitignore it
   - [x] 1.2 Add the gothic theme tokens (colors, serif headings) and the
     single-page layout shell
-- [ ] 2. Backend: storyboard API
-  - [ ] 2.1 Add `POST /api/storyboard`: prompt Gemini for 8–12 shots as
+- [x] 2. Backend: storyboard API
+  - [x] 2.1 Add `POST /api/storyboard`: prompt Gemini for 8–12 shots as
     strict JSON, using the server-side API key from env
-  - [ ] 2.2 Add one retry on JSON parse failure; return a Chinese error
+  - [x] 2.2 Add one retry on JSON parse failure; return a Chinese error
     message on final failure
 - [ ] 3. Frontend: input and generation
-  - [ ] 3.1 Paste box with character count, 500-char minimum hint, Generate
+  - [x] 3.1 Paste box with character count, 500-char minimum hint, Generate
     button with loading state
   - [ ] 3.2 "Try the sample" button loading the first ~1500 chars of the
     sample chapter

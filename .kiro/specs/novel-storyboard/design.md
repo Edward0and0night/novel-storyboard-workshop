@@ -3,13 +3,15 @@
 ## Overview
 Next.js (App Router) + Tailwind. One page, one API route. No database.
 Frontend: paste box → shot cards → export bar. Backend: `POST
-/api/storyboard` calls the Gemini API (OpenAI-compatible endpoint on AI
-Studio, model Gemini 4 Hydrogen) with a system prompt that forces a strict
-JSON schema, then validates and returns it.
+/api/storyboard` calls an OpenAI-compatible chat completions endpoint
+(base URL `https://tokenfuture.si/v1`, model `cn:deepseek-v4.1-flash`,
+key from `GEMINI_API_KEY` in `.env.local`, server-side only) with a prompt
+that forces a strict JSON schema, then validates and returns it. The gateway
+ignores the `system` role, so the instructions are sent in the user message.
 
 ## Architecture
 - `app/page.tsx` — input, loading state, shot cards, export bar, sample button.
-- `app/api/storyboard/route.ts` — builds the prompt, calls Gemini, parses
+- `app/api/storyboard/route.ts` — builds the prompt, calls the model, parses
   JSON, retries once on parse failure, returns `{ shots: [...] }`.
 - `lib/prompt.ts` — system prompt + JSON schema (Chinese output, keep
   dialogue verbatim, 8–12 shots, gothic visual-prompt style hints).
