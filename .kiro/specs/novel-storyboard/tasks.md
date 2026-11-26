@@ -21,6 +21,6 @@
   - [x] 4.2 Export Markdown download + Copy-to-clipboard; save last 5
     generations to localStorage
 - [ ] 5. Polish and submit
-  - [ ] 5.1 Mobile check (no horizontal scroll), empty/error states in Chinese
+  - [x] 5.1 Mobile check (no horizontal scroll), empty/error states in Chinese
   - [ ] 5.2 Deploy the app, record a <3 min demo video, write the
     "How I used Kiro" note, submit before Dec 5, 07:00 JST

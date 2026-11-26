@@ -22,7 +22,8 @@ html, body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  overflow-x: hidden;
+  /* clip 不会把 body 变成滚动容器；hidden 会，导致生成按钮的 sticky 吸底失效 */
+  overflow-x: clip;
 }
 
 h1, h2, h3 {
